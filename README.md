@@ -102,6 +102,58 @@ python -m tracker run --loop --interval 6h
 
 ---
 
+## クラウド（VPS / クラウドVM）で動かす — Docker
+
+任意の「仮想コンピュータ」（さくらVPS, Conoha, EC2, Lightsail, GCE など）で常駐できます。
+
+```bash
+# サーバー上で
+git clone <this repo> && cd <repo>
+cp .env.example .env       # INSTAGRAM_SESSIONID と WEBHOOK_URL を記入
+docker compose up -d --build
+```
+
+- `.env` に秘密情報（sessionid / webhook）を入れます（`config.json` は不要、`.env` は gitignore 済み）
+- スナップショットとログインセッションは `./data` ボリュームに保存され、再起動しても残ります
+- `restart: unless-stopped` なのでサーバー再起動後も自動で復帰します
+- 間隔の変更: `.env` の `INTERVAL=24h` を編集して `docker compose up -d` で反映
+
+ログ確認 / 停止:
+
+```bash
+docker compose logs -f      # 動作ログ
+docker compose down         # 停止
+```
+
+### ⚠️ クラウドで動かすときの注意（IPの問題）
+
+`sessionid` は本人が **自宅の Chrome（自宅IP）** で作ったセッションです。これを
+**データセンターのIP** から使うと、Instagram に「不審なアクセス」と判定されやすく、
+challenge（本人確認）要求・セッション失効・アカウント制限が起きることがあります。
+リスクを下げるには:
+
+- `INTERVAL` を **12〜24時間** など長めにする（既定は12h）
+- セッションが切れたら新しい `sessionid` を取り直して `.env` を更新 → `docker compose up -d`
+- 必要なら住宅用プロキシ経由にする（要追加実装）
+
+セッション失効時はログに `Login via sessionid failed ...` が出ます。
+
+### env だけで動かす（config.json なし）
+
+Docker 実行時は以下の環境変数だけで動作します:
+
+| 環境変数 | 説明 |
+| --- | --- |
+| `INSTAGRAM_SESSIONID` | 必須。Chrome から取得した sessionid |
+| `WEBHOOK_URL` | 必須（`NOTIFIER_TYPE=none` 以外）。Discord/Slack の Webhook |
+| `TARGET_USERNAME` | 任意。空ならログイン中の本人アカウント |
+| `NOTIFIER_TYPE` | 任意。`discord` / `slack` / `none`（既定 discord） |
+| `INTERVAL` | 任意。`12h` / `24h` など（既定 12h） |
+
+`track`（通知する差分の種類）を絞りたい場合のみ `config.json` をマウントしてください。
+
+---
+
 ## 仕組み
 
 1. `sessionid` で instagrapi にログイン（デバイス情報は `data/ig_settings.json` にキャッシュ）

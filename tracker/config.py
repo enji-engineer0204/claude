@@ -6,6 +6,11 @@ disk:
 
 - ``INSTAGRAM_SESSIONID`` -> ``session_id``
 - ``WEBHOOK_URL``         -> ``notifier.webhook_url``
+- ``TARGET_USERNAME``     -> ``target_username``
+- ``NOTIFIER_TYPE``       -> ``notifier.type``
+
+This lets the tool run from just environment variables (e.g. in Docker)
+without a ``config.json`` on disk.
 """
 
 from __future__ import annotations
@@ -109,5 +114,9 @@ def load_config(path: str | os.PathLike[str] = "config.json") -> Config:
     cfg.notifier.webhook_url = os.environ.get(
         "WEBHOOK_URL", cfg.notifier.webhook_url
     ).strip()
+    cfg.target_username = os.environ.get(
+        "TARGET_USERNAME", cfg.target_username
+    ).strip()
+    cfg.notifier.type = os.environ.get("NOTIFIER_TYPE", cfg.notifier.type).strip()
 
     return cfg

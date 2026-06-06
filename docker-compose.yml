@@ -1,0 +1,16 @@
+services:
+  tracker:
+    build: .
+    image: instagram-follower-tracker
+    container_name: ig-follower-tracker
+    restart: unless-stopped
+    # Secrets and settings are read from the .env file (copy .env.example).
+    env_file:
+      - .env
+    environment:
+      # How often to check. 12h+ recommended to reduce block risk from a
+      # datacenter IP. Override here or in .env.
+      INTERVAL: ${INTERVAL:-12h}
+    volumes:
+      # Persist snapshots + cached session across restarts.
+      - ./data:/app/data
