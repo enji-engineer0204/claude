@@ -1,0 +1,11 @@
+{
+  "session_id": "",
+  "target_username": "",
+  "track": ["new_following", "lost_following", "new_followers", "lost_followers"],
+  "notifier": {
+    "type": "discord",
+    "webhook_url": ""
+  },
+  "data_dir": "data",
+  "max_amount": 0
+}
