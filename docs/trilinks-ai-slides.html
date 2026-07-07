@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>トライリンクス 社内AI浸透 たたき台</title>
+<style>*{box-sizing:border-box}html,body{margin:0;padding:0}img{max-width:100%}</style>
+</head>
+<body>
+<style>
+  :root{
+    --ink:#161d33;          /* brand navy */
+    --paper:#f6f4ee;        /* warm ivory ground */
+    --panel:#fffdf8;        /* card surface */
+    --text:#1c2233;
+    --muted:#5b6072;
+    --hair:#e2ddd1;         /* hairline on paper */
+    --accent:#227d79;       /* connective teal */
+    --accent-soft:#e2efec;
+    --amber:#b3771f;        /* human-in-loop signal */
+    --amber-soft:#f3e7d0;
+    --code-bg:#141a2c;
+    --code-fg:#e7e3d6;
+    --radius:14px;
+    --maxw:1080px;
+    --jp:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic","YuGothic","Noto Sans JP","Meiryo",system-ui,sans-serif;
+    --mono:ui-monospace,"SFMono-Regular","SF Mono","JetBrains Mono","Menlo",monospace;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --ink:#0e1424; --paper:#111725; --panel:#161d2e; --text:#e7e9f0;
+      --muted:#9aa1b5; --hair:#26304a; --accent:#5bc4bd; --accent-soft:#153230;
+      --amber:#e0a94b; --amber-soft:#3a2f1b; --code-bg:#0b1120; --code-fg:#dfe3ee;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#0e1424; --paper:#111725; --panel:#161d2e; --text:#e7e9f0;
+    --muted:#9aa1b5; --hair:#26304a; --accent:#5bc4bd; --accent-soft:#153230;
+    --amber:#e0a94b; --amber-soft:#3a2f1b; --code-bg:#0b1120; --code-fg:#dfe3ee;
+  }
+  :root[data-theme="light"]{
+    --ink:#161d33; --paper:#f6f4ee; --panel:#fffdf8; --text:#1c2233;
+    --muted:#5b6072; --hair:#e2ddd1; --accent:#227d79; --accent-soft:#e2efec;
+    --amber:#b3771f; --amber-soft:#f3e7d0; --code-bg:#141a2c; --code-fg:#e7e3d6;
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--text);font-family:var(--jp);
+    line-height:1.75;-webkit-font-smoothing:antialiased;letter-spacing:.01em}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  section{padding:72px 0;border-top:1px solid var(--hair)}
+  h2{font-size:clamp(1.4rem,3vw,2rem);line-height:1.3;margin:0 0 8px;text-wrap:balance;letter-spacing:.02em}
+  h3{font-size:1.05rem;margin:0 0 6px;letter-spacing:.02em}
+  p{margin:0 0 14px;max-width:64ch}
+  a{color:var(--accent)}
+  .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--accent);margin:0 0 14px;display:flex;align-items:center;gap:10px}
+  .eyebrow::before{content:"";width:26px;height:1px;background:var(--accent);display:inline-block}
+  .lead{font-size:1.12rem;color:var(--muted);max-width:60ch}
+
+  /* ---------- HERO ---------- */
+  .hero{background:var(--ink);color:#f3f2ec;border-top:none;position:relative;overflow:hidden;
+    padding:96px 0 88px}
+  .hero .wrap{position:relative;z-index:2}
+  .brandline{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:.74rem;
+    letter-spacing:.28em;text-transform:uppercase;color:#aeb7cf;margin-bottom:40px}
+  .hero h1{font-size:clamp(2.1rem,5.4vw,3.5rem);line-height:1.18;margin:0 0 22px;font-weight:800;
+    letter-spacing:.01em;text-wrap:balance;color:#fff}
+  .hero h1 em{font-style:normal;color:#7fd8d0;border-bottom:3px solid #227d79;padding-bottom:2px}
+  .hero .sub{font-size:1.15rem;color:#c7cede;max-width:54ch;margin:0 0 40px}
+  .hero-meta{display:flex;flex-wrap:wrap;gap:10px 26px;font-family:var(--mono);font-size:.78rem;
+    color:#8f99b5;letter-spacing:.04em;border-top:1px solid #2a3350;padding-top:20px}
+  .hero-meta b{color:#e7ebf5;font-weight:600}
+  /* connective node motif */
+  .nodes{position:absolute;right:-40px;top:0;bottom:0;width:46%;z-index:1;opacity:.9}
+  @media(max-width:760px){.nodes{display:none}}
+
+  /* ---------- TYPE GRID ---------- */
+  .types{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--hair);
+    border:1px solid var(--hair);border-radius:var(--radius);overflow:hidden;margin-top:34px}
+  @media(max-width:720px){.types{grid-template-columns:1fr}}
+  .type{background:var(--panel);padding:26px 24px;display:flex;flex-direction:column;gap:8px}
+  .type .no{font-family:var(--mono);font-size:.8rem;color:var(--accent);letter-spacing:.1em;font-weight:600}
+  .type h3{margin:0}
+  .type .one{color:var(--muted);font-size:.95rem;margin:0}
+  .type .ex{margin-top:auto;padding-top:12px;font-size:.82rem;color:var(--text)}
+  .type .ex span{font-family:var(--mono);font-size:.72rem;color:var(--accent);
+    letter-spacing:.08em;display:block;margin-bottom:3px;text-transform:uppercase}
+
+  /* ---------- chips / callouts ---------- */
+  .tag{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.68rem;
+    letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:100px;
+    border:1px solid var(--hair);color:var(--muted);background:var(--panel)}
+  .tag.ai{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 40%,transparent);background:var(--accent-soft)}
+  .tag.human{color:var(--amber);border-color:color-mix(in srgb,var(--amber) 40%,transparent);background:var(--amber-soft)}
+
+  /* ---------- pipeline ---------- */
+  .flow{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0 6px}
+  .step{flex:1 1 120px;background:var(--panel);border:1px solid var(--hair);border-radius:10px;
+    padding:12px 14px;position:relative;min-width:120px}
+  .step .k{font-family:var(--mono);font-size:.68rem;color:var(--accent);letter-spacing:.05em}
+  .step .v{font-size:.86rem;margin-top:2px}
+  .step .m{font-family:var(--mono);font-size:.66rem;color:var(--muted);margin-top:4px}
+
+  /* ---------- stages (rollout) ---------- */
+  .stages{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}
+  @media(max-width:680px){.stages{grid-template-columns:1fr}}
+  .stage{background:var(--panel);border:1px solid var(--hair);border-radius:var(--radius);padding:22px;
+    position:relative}
+  .stage::before{content:attr(data-n);position:absolute;top:16px;right:18px;font-family:var(--mono);
+    font-size:2.2rem;font-weight:700;color:var(--hair);line-height:1}
+  .stage h3{color:var(--accent)}
+  .stage.full h3{color:var(--amber)}
+  .stage p{font-size:.9rem;color:var(--muted);margin:0}
+
+  /* ---------- guardrail table ---------- */
+  .risk{width:100%;border-collapse:collapse;margin-top:18px;font-size:.9rem;
+    border:1px solid var(--hair);border-radius:var(--radius);overflow:hidden}
+  .risk th,.risk td{text-align:left;padding:12px 16px;border-bottom:1px solid var(--hair)}
+  .risk th{background:var(--ink);color:#eef1f7;font-weight:600;font-size:.76rem;letter-spacing:.08em;
+    font-family:var(--mono);text-transform:uppercase}
+  .risk tr:last-child td{border-bottom:none}
+  .risk td:first-child{font-family:var(--mono);font-weight:600}
+  .lv-low{color:var(--accent)}.lv-mid{color:var(--amber)}.lv-high{color:#c0483f}
+  @media (prefers-color-scheme:dark){.lv-high{color:#f08a80}}
+  :root[data-theme="dark"] .lv-high{color:#f08a80}
+
+  /* ---------- code ---------- */
+  pre{background:var(--code-bg);color:var(--code-fg);border-radius:12px;padding:18px 20px;
+    overflow-x:auto;font-family:var(--mono);font-size:.82rem;line-height:1.7;margin:0}
+  pre .c{color:#8f99b5}
+  .tpl{display:grid;gap:16px;margin-top:22px}
+  .tpl figure{margin:0}
+  .tpl figcaption{font-family:var(--mono);font-size:.74rem;letter-spacing:.06em;color:var(--accent);
+    margin-bottom:8px;text-transform:uppercase}
+
+  /* ---------- roadmap ---------- */
+  .road{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:26px;
+    border:1px solid var(--hair);border-radius:var(--radius);overflow:hidden}
+  @media(max-width:760px){.road{grid-template-columns:1fr 1fr}}
+  @media(max-width:440px){.road{grid-template-columns:1fr}}
+  .ph{padding:22px 20px;background:var(--panel);border-right:1px solid var(--hair);border-bottom:1px solid var(--hair)}
+  .ph .n{font-family:var(--mono);font-size:.72rem;color:var(--accent);letter-spacing:.1em}
+  .ph h3{margin:6px 0 6px;font-size:1rem}
+  .ph p{font-size:.84rem;color:var(--muted);margin:0}
+
+  .method{background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);
+    border-radius:var(--radius);padding:24px 26px;margin-top:8px}
+  .method h3{color:var(--accent)}
+  .method ul{margin:10px 0 0;padding-left:20px}
+  .method li{margin:6px 0;font-size:.94rem}
+
+  /* ---------- QA ---------- */
+  .qa{display:grid;gap:1px;background:var(--hair);border:1px solid var(--hair);
+    border-radius:var(--radius);overflow:hidden;margin-top:24px}
+  .qa .row{background:var(--panel);padding:18px 22px;display:grid;grid-template-columns:minmax(180px,1fr) 2fr;gap:20px}
+  @media(max-width:640px){.qa .row{grid-template-columns:1fr;gap:6px}}
+  .qa .q{font-weight:600;color:var(--text)}
+  .qa .q::before{content:"Q ";font-family:var(--mono);color:var(--amber);font-weight:700}
+  .qa .a{color:var(--muted);font-size:.92rem}
+  .qa .a::before{content:"A ";font-family:var(--mono);color:var(--accent);font-weight:700}
+
+  /* ---------- footer ---------- */
+  footer{background:var(--ink);color:#aeb7cf;padding:40px 0;border-top:none}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;align-items:center;
+    font-family:var(--mono);font-size:.76rem;letter-spacing:.06em}
+  .badge{background:#227d79;color:#fff;padding:6px 12px;font-weight:600;letter-spacing:.08em;
+    clip-path:polygon(0 0,100% 0,100% 100%,10px 100%)}
+
+  .note{font-size:.82rem;color:var(--muted);border-left:2px solid var(--amber);padding:2px 0 2px 14px;margin-top:22px}
+
+  @media(prefers-reduced-motion:no-preference){
+    .reveal{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
+    .reveal.in{opacity:1;transform:none}
+  }
+</style>
+
+<header class="hero">
+  <svg class="nodes" viewBox="0 0 400 600" fill="none" aria-hidden="true">
+    <g stroke="#2c3a5e" stroke-width="1.4">
+      <line x1="120" y1="110" x2="300" y2="180"/><line x1="300" y1="180" x2="150" y2="330"/>
+      <line x1="150" y1="330" x2="320" y2="420"/><line x1="120" y1="110" x2="150" y2="330"/>
+      <line x1="300" y1="180" x2="320" y2="420"/><line x1="150" y1="330" x2="60" y2="480"/>
+    </g>
+    <circle cx="120" cy="110" r="7" fill="#7fd8d0"/><circle cx="300" cy="180" r="10" fill="#227d79"/>
+    <circle cx="150" cy="330" r="13" fill="#7fd8d0"/><circle cx="320" cy="420" r="7" fill="#227d79"/>
+    <circle cx="60" cy="480" r="6" fill="#3f6f6b"/>
+  </svg>
+  <div class="wrap">
+    <div class="brandline">
+      <span>TRILINKS Inc.</span><span>/</span><span>社内AI浸透 たたき台</span>
+    </div>
+    <h1>AIを、一部の人の魔法から<br><em>全員の普通の道具</em>にする。</h1>
+    <p class="sub">「賢いから使える」のではない。使い方に<strong>型</strong>がある。<br>
+      社内で実際に動いているAIを実例に、真似できる7つの型を配る。</p>
+    <div class="hero-meta">
+      <span>作成 <b>長島 陸温</b></span>
+      <span>根拠 <b>Notion実作業記録＋Claude Codeセッション横断</b></span>
+      <span>版 <b>たたき台 v0.3</b></span>
+    </div>
+  </div>
+</header>
+
+<section class="reveal">
+  <div class="wrap">
+    <p class="eyebrow">なぜ今、うちで</p>
+    <h2>「作れる速さと質」が、そのまま競争力になっている。</h2>
+    <p class="lead">トライリンクスは、業務特化AIエージェント開発・推進(SUISHIN)・AIキャラ／音声AI・ハンズオン研修を手がける会社。
+      強みは<strong>数日単位の開発スピード</strong>。だが世の中では
+      <strong>AIエージェントの約72%がPoC（お試し）止まり</strong>で本番に乗らない。
+      差がつくのは「導入」ではなく<strong>定着</strong>——つまり、全員が日常業務で当たり前に使えているか。この資料はそのための共通言語です。</p>
+    <p class="note">方針：<b>躊躇っている前提にしない。</b>「みんな使っている前提で、そこにプラスアルファ」で話す（社内アンケート「質問一覧」で決めた方針を踏襲）。</p>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <p class="eyebrow">結論</p>
+    <h2>伸びる人のAIの使い方は「7つの型」に集約される。</h2>
+    <p class="lead">長島が実際にトライリンクス業務でAIと作った成果物・運用記録から抽出。
+      全部「AIが賢いか」ではなく<strong>頼み方・使い切り方・組み込み方</strong>の話＝才能でなく型なので、教育できる。</p>
+    <div class="types">
+      <article class="type">
+        <span class="no">TYPE 01</span><h3>チャットで終わらせず「動くもの」を作り切る</h3>
+        <p class="one">質問でなく、業務が回るツール／パイプラインまで。</p>
+        <p class="ex"><span>実例</span>ai-news-tuber：ニュース→AI解説ショート動画を自動生成する7段パイプライン（<code>npm run pipeline</code>一発）</p>
+      </article>
+      <article class="type">
+        <span class="no">TYPE 02</span><h3>繰り返し作業を「コマンド／仕組み」に変える</h3>
+        <p class="one">一度作れば、全員が一言で同じ品質を呼べる。</p>
+        <p class="ex"><span>実例</span><code>/議事録</code> <code>/日報</code> コマンド・自作のNotionタスク生成スキル。「人によって出力バラバラ／保存先が散る」を潰す</p>
+      </article>
+      <article class="type">
+        <span class="no">TYPE 03</span><h3>手動MVP→半自動→全自動の順で出す</h3>
+        <p class="one">まず手で回して価値検証、それから自動化。</p>
+        <p class="ex"><span>実例</span>商談→改善点AI：先にDBだけ作り手入力→効くと確認→段階的に自動化</p>
+      </article>
+      <article class="type">
+        <span class="no">TYPE 04</span><h3>セキュリティ・権限・法務を「最初」に設計</h3>
+        <p class="one">秘密・公開範囲・規約・上限を先に決める。</p>
+        <p class="ex"><span>実例</span>APIキーは<code>.env</code>分離／公開範囲でDB分離＋コードネーム<code>TL-###</code>／AI生成表記／予算上限5万円</p>
+      </article>
+      <article class="type">
+        <span class="no">TYPE 05</span><h3>丸投げせず「ガードレールと検証」を敷く</h3>
+        <p class="one">検証・dry-run・人の最終レビューを挟む。</p>
+        <p class="ex"><span>実例</span>スキーマ・禁止語句検証／<code>--dry-run</code>／指数バックオフ／権限は確認モード／本番前に自分の手で動作検証（runbook）</p>
+      </article>
+      <article class="type">
+        <span class="no">TYPE 06</span><h3>引き継げる「文脈ドキュメント」を残す</h3>
+        <p class="one">属人化を防ぎ、未来の自分とAIに渡す。</p>
+        <p class="ex"><span>実例</span><code>CLAUDE.md</code>／ハンドオフ文書／実行ログ（いつ何を決め、どう方針転換したか）</p>
+      </article>
+      <article class="type">
+        <span class="no">TYPE 07</span><h3>結果を「普段見る場所」に流し、道具は使い分ける</h3>
+        <p class="one">通知先も、モデルも、目的で選ぶ。</p>
+        <p class="ex"><span>実例</span>Slack／Discord／Notionへ自動通知。リスク判定=Opus・生成=Sonnet。手段は調べ直して更新（Chrome想定→公式MCPへ）</p>
+      </article>
+      <article class="type" style="background:var(--ink);color:#eef1f7">
+        <span class="no" style="color:#7fd8d0">USE IT</span>
+        <h3 style="color:#fff">この型は「教育できる」</h3>
+        <p class="one" style="color:#c7cede">才能ではなく手順。だから配れる。次ページから、実例と"明日から使える頼み方"に落とします。</p>
+        <p class="ex" style="color:#aeb7cf"><span style="color:#7fd8d0">合言葉</span>AIは"賢い相談相手"でなく"作ってくれる部下"。最後まで作らせる。</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <p class="eyebrow">実例で見る ①</p>
+    <h2>「動くもの」は、こう組む。— ai-news-tuber の7段パイプライン</h2>
+    <p class="lead">1コマンドで、ニュースからAIキャラ解説動画までを生成。<span class="tag ai">🤖 AI完結</span> の工程と <span class="tag human">🧑 人が承認</span> の工程を分けているのがポイント。</p>
+    <div class="flow">
+      <div class="step"><div class="k">1 / read</div><div class="v">記事読込・URL抽出</div><div class="m">🤖</div></div>
+      <div class="step"><div class="k">2 / risk</div><div class="v">リスク判定</div><div class="m">Opus 4.7</div></div>
+      <div class="step"><div class="k">3 / script</div><div class="v">台本JSON生成</div><div class="m">Sonnet 4.6</div></div>
+      <div class="step"><div class="k">4 / validate</div><div class="v">スキーマ・禁止語句・出典検証</div><div class="m">🤖 検証</div></div>
+      <div class="step"><div class="k">5 / audio</div><div class="v">音声生成</div><div class="m">Fish Audio</div></div>
+      <div class="step"><div class="k">6 / render</div><div class="v">動画レンダ</div><div class="m">Remotion</div></div>
+      <div class="step"><div class="k">7 / notify</div><div class="v">Slack通知</div><div class="m">Block Kit</div></div>
+    </div>
+    <p style="margin-top:18px">投稿は自動で垂れ流さない。リスクで止める設計：</p>
+    <table class="risk">
+      <thead><tr><th>レベル</th><th>例</th><th>動作</th></tr></thead>
+      <tbody>
+        <tr><td class="lv-low">low</td><td>AIツール発表・ガジェット・資金調達</td><td>自動投稿候補</td></tr>
+        <tr><td class="lv-mid">medium</td><td>大企業炎上・人員削減・規制・有名人発言</td><td>Slack承認必須 <span class="tag human">🧑 人が判断</span></td></tr>
+        <tr><td class="lv-high">high</td><td>政治・選挙・災害・医療・投資助言</td><td>投稿禁止</td></tr>
+      </tbody>
+    </table>
+    <p class="note">開発ルール（実物）：<b>自動投稿は最初から有効化しない</b>／<b>初回は必ずunlisted</b>／実装前に変更予定ファイルを説明させる／いきなり全部作らず単体テストしてから接続。1本あたり約12円までコスト試算済み。</p>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <p class="eyebrow">実例で見る ②</p>
+    <h2>いきなり全自動を狙わない。— 段階リリース（低リスク順）</h2>
+    <p class="lead">「商談→今週のプロダクト改善点が出るAI」の実際の設計。<strong>手で回して"効く"と分かってから</strong>自動化する。</p>
+    <div class="stages">
+      <div class="stage" data-n="1"><h3>手動MVP</h3><p>DBだけ作り、商談後に手で1レコード入力→週次でAIに「改善点出して」。仕組み化の前に価値検証。</p></div>
+      <div class="stage" data-n="2"><h3>半自動</h3><p>文字起こし取得を半自動化。入力の手間だけ先に削る。</p></div>
+      <div class="stage full" data-n="3"><h3>全自動</h3><p>週次スケジュール実行でダイジェストまで自動生成。<span class="tag human" style="margin-top:8px">🧑 出力は人がレビュー</span></p></div>
+    </div>
+    <p class="note">手段は決め打ちしない：当初「Claude in Chromeで吸い出す」想定→<b>調べ直したら公式MCP/APIの方が堅い</b>と判明し方針転換。道具は状況で更新していい。</p>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <p class="eyebrow">明日から</p>
+    <h2>コピペで使える「頼み方テンプレ」</h2>
+    <p class="lead">「何をどう頼めばいいか分からない」を潰す3枚。社内の実タスクで書き換えて使う。</p>
+    <div class="tpl">
+      <figure>
+        <figcaption>テンプレA ── 面倒ごとを自動化したい</figcaption>
+        <pre><span class="c"># 例：議事録／日報／Excel転記／商談インサイト蓄積 に差し替え</span>
+毎回◯◯を手作業でやっていて面倒。自動化したい。
+【入力】どこから何を取るか（例：このSlackチャンネル / tl;dv / Notion議事録DB）
+【出力】どこに何を出すか（例：Notionの△△DBに1件ずつ / Slackの#□□に通知）
+【制約】この情報は秘密 / 外部送信しない / 実行は1日1回でいい
+まず"手で1回動く最小版"を作って。効くと分かったら半自動→全自動に段階で進めたい。</pre>
+      </figure>
+      <figure>
+        <figcaption>テンプレB ── 繰り返し作業をコマンド化して全員に配る</figcaption>
+        <pre>◯◯（例：議事録・日報・要件レビュー）を、毎回<span class="c">同じ品質・同じ保存先</span>で作れるように
+「コマンド化」して。固定プロンプト＋出力フォーマット＋保存先DBまで決めて、
+他の人が一言（例：<span class="c">/議事録</span>）で呼べる形にして。</pre>
+      </figure>
+      <figure>
+        <figcaption>テンプレC ── 安全に始める（ガードレール付き）</figcaption>
+        <pre>作る前に先に決めたい：
+ ① 秘密情報はどれで、どう分離するか（.env / 公開範囲）
+ ② 出す前に何を検証するか（dry-run / スキーマ / 人の承認ライン）
+ ③ 暴走・課金の上限
+そのうえで、変更予定ファイルと設計をまず説明して。実装はその後。</pre>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <p class="eyebrow">浸透メソッド</p>
+    <h2>「説明」より「一緒にやる」。1業務を片付けて体感させる。</h2>
+    <p class="lead">これは長島が実際に社外ワークショップで使っている型。そのまま社内に効く。</p>
+    <div class="method">
+      <h3>体感ドリブンの回し方（西武WS 当日ガイドより）</h3>
+      <ul>
+        <li><strong>説明は5分以内</strong>。あとは画面共有で見せる＆一緒にやる（<strong>4見せる：6手を動かす</strong>）</li>
+        <li>相手に<strong>「どう指示します？」と振る</strong>。見てるだけにさせない</li>
+        <li>各デモで<strong>「今まで何分？→今◯分」</strong>と時間を言ってもらう（＝ROIを本人の口から）</li>
+        <li>ゴールは<strong>実業務を1つAIで片付けて腹落ち→「社内で広げたい」</strong>まで</li>
+      </ul>
+    </div>
+    <p class="eyebrow" style="margin-top:44px">ロードマップ</p>
+    <h2 style="font-size:1.35rem">点火 → 各自1個 → 型化 → 資産化</h2>
+    <div class="road">
+      <div class="ph"><div class="n">PHASE 01</div><h3>点火</h3><p>実例をデモし、各自の"面倒ごと"を1つ書き出す。「うちのAIで何ができるか」を体感。</p></div>
+      <div class="ph"><div class="n">PHASE 02</div><h3>各自1個</h3><p>全員がテンプレAで自分の面倒ごとを1つ自動化。相談窓口（Slack）＋小さな成功体験。</p></div>
+      <div class="ph"><div class="n">PHASE 03</div><h3>型化・共有</h3><p>良い頼み方をコマンド化して横展開。プロンプト集・5分動画・部署別活用事例。</p></div>
+      <div class="ph"><div class="n">PHASE 04</div><h3>資産化</h3><p>秘密情報・AI表記・承認ラインを全社ルール化。文脈ドキュメント文化を標準に。</p></div>
+    </div>
+    <p class="note">勘所：<b>①点火で終わらせず、②"全員が自分の1個を持つ"まで</b>落とすのが分かれ目。社内アンケート「質問一覧」の設問がそのまま①②のネタ出しに使えます。</p>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <p class="eyebrow">想定される不安</p>
+    <h2>ためらいの理由に、先に答えておく。</h2>
+    <div class="qa">
+      <div class="row"><div class="q">うまく指示できるか不安</div><div class="a">良い指示はコマンドに固めて配る（型2）。普段の言葉で呼ぶだけの状態を作る。</div></div>
+      <div class="row"><div class="q">忙しくて学ぶ時間がない</div><div class="a">まず1個だけ（テンプレA）。手動MVPは"手作業＋AIに一言"から始められる。</div></div>
+      <div class="row"><div class="q">自分の業務で使うシーンが浮かばない</div><div class="a">"面倒ごと書き出し"から。議事録・日報・転記など、全員に必ずある。</div></div>
+      <div class="row"><div class="q">精度・セキュリティが不安</div><div class="a">型4・型5。秘密を先に分離し、出す前に検証・人がレビューすれば安全に前進できる。</div></div>
+      <div class="row"><div class="q">回答がイマイチだった</div><div class="a">諦めず頼み方を変えて再挑戦。出力は"たたき台"前提で、選ぶ・直す工程を持つ。</div></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>これは<b style="color:#e7ebf5">たたき台</b>です — 加筆・削除・並べ替え前提</span>
+    <span class="badge">トライリンクス株式会社 ／ 2026</span>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var els=document.querySelectorAll('.reveal');
+    if(!('IntersectionObserver' in window)){els.forEach(function(e){e.classList.add('in')});return;}
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){
+      if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.12});
+    els.forEach(function(e){io.observe(e);});
+  })();
+</script>
+
+</body>
+</html>
